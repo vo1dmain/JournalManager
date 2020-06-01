@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Journal manager</string>
+    <string name="journal_title_hint">Write your journal title here</string>
+    <string name="create_first_journal_hint">Tap the \"+\" to add your first journal</string>
+    <string name="menu_main_search_action_title">Search</string>
+    <string name="menu_main_delete_all_title">Delete all</string>
+    <string name="menu_main_show_about_title">About</string>
+    <string name="create_journal_dialog_title">Create new journal</string>
+    <string name="create_journal_dialog_positive">OK</string>
+    <string name="create_journal_dialog_negative">Cancel</string>
+    <string name="journal_create_success_message">New journal has been added: %1$s</string>
+    <string name="all_journals_deleted_message">All journals has been deleted</string>
+    <string name="menu_journal_save_title">Save</string>
+    <string name="menu_journal_delete_title">Delete</string>
+    <string name="journal_update_failure_message">Failed to update \"%1$s\" journal</string>
+    <string name="journal_update_success_message">Journal \"%1$s\" has been successfully updated</string>
+    <string name="journal_delete_failure_message">Failed to delete the \"%1$s\" journal</string>
+    <string name="journal_delete_success_message">Journal %1$s has been deleted</string>
+    <string name="nothing_found_message_text">Nothing found</string>
+    <string name="selected_count_title">Selected: %1$d</string>
+    <string name="select_all">All</string>
+</resources>
