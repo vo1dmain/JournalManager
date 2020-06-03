@@ -20,6 +20,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.selection.SelectionPredicates;
 import androidx.recyclerview.selection.SelectionTracker;
+import androidx.recyclerview.selection.SelectionTracker.SelectionObserver;
 import androidx.recyclerview.selection.StorageStrategy;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
                 .withSelectionPredicate(SelectionPredicates.createSelectAnything())
                 .build();
 
-        tracker.addObserver(new SelectionTracker.SelectionObserver() {
+        tracker.addObserver(new SelectionObserver<Long>() {
             @Override
             public void onSelectionChanged() {
                 if (tracker.hasSelection()) {
@@ -188,27 +189,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == OPEN_JOURNAL_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                assert data != null;
-
-                String title = data.getStringExtra(JournalActivity.EXTRA_TITLE);
-                int id = data.getIntExtra(JournalActivity.EXTRA_ID, -1);
-
-                if (id == -1) {
-                    String mes = resources.getString(R.string.journal_update_failure_message, title);
-                    Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
-                    return;
-                }
-
-                Journal journal = new Journal(title);
-                journal.setId(id);
-
-                viewModel.update(journal);
-
-                String mes = resources.getString(R.string.journal_update_success_message, title);
-                Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
-
-            } else if (resultCode == RESULT_DELETE) {
+             if (resultCode == RESULT_DELETE) {
                 assert data != null;
 
                 String title = data.getStringExtra(JournalActivity.EXTRA_TITLE);
@@ -228,6 +209,14 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
                 String mes = resources.getString(R.string.journal_delete_success_message, title);
                 Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
             }
+             else if (resultCode == RESULT_CANCELED)
+             {
+                 assert data != null;
+                 String title = data.getStringExtra(JournalActivity.EXTRA_TITLE);
+                 String mes = resources.getString(R.string.journal_update_failure_message, title);
+                 Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
+                 return;
+             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

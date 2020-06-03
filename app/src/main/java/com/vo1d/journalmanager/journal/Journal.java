@@ -3,6 +3,10 @@ package com.vo1d.journalmanager.journal;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity(tableName = "journal_table")
 public class Journal {
@@ -13,7 +17,8 @@ public class Journal {
     @ColumnInfo(name = "title")
     private String title;
 
-    //private List<Page> pages = new LinkedList<>();
+    @TypeConverters({PagesConverter.class})
+    private List<JournalPage> pages = new LinkedList<>();
 
     public Journal(String title) {
         this.title = title;
@@ -31,9 +36,17 @@ public class Journal {
         return title;
     }
 
-    /*public List<Page> getPages() {
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<JournalPage> getPages() {
         return pages;
-    }*/
+    }
+
+    public void setPages(List<JournalPage> pages) {
+        this.pages = pages;
+    }
 
     @Override
     public boolean equals(Object obj) {

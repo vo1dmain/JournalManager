@@ -19,4 +19,5 @@
     <string name="nothing_found_message_text">Nothing found</string>
     <string name="selected_count_title">Selected: %1$d</string>
     <string name="select_all">All</string>
+    <string name="menu_journal_add_title">Add new page</string>
 </resources>

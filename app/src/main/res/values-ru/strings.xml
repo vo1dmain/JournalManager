@@ -20,4 +20,5 @@
     <string name="nothing_found_message_text">Ничего не найдено</string>
     <string name="select_all">Все</string>
     <string name="selected_count_title">Выбрано: %1$d</string>
+    <string name="menu_journal_add_title">Добавить страницу</string>
 </resources>
