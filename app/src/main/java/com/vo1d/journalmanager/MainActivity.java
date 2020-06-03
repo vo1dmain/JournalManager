@@ -30,9 +30,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.vo1d.journalmanager.journal.Journal;
 import com.vo1d.journalmanager.journal.JournalViewModel;
 import com.vo1d.journalmanager.ui.journal.JournalActivity;
-import com.vo1d.journalmanager.ui.journal.JournalAdapter;
-import com.vo1d.journalmanager.ui.journal.JournalDetailsLookup;
-import com.vo1d.journalmanager.ui.journal.JournalKeyProvider;
+import com.vo1d.journalmanager.ui.main.JournalAdapter;
+import com.vo1d.journalmanager.ui.main.JournalDetailsLookup;
+import com.vo1d.journalmanager.ui.main.JournalKeyProvider;
 import com.vo1d.journalmanager.ui.main.CreateNewJournalDialog;
 
 import java.util.List;

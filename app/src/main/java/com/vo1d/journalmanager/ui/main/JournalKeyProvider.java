@@ -1,4 +1,4 @@
-package com.vo1d.journalmanager.ui.journal;
+package com.vo1d.journalmanager.ui.main;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

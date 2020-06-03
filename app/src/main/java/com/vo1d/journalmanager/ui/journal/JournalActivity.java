@@ -38,6 +38,7 @@ public class JournalActivity extends AppCompatActivity {
     Menu menu;
     TabLayout tabs;
     ViewPager viewPager;
+    SectionsPagerAdapter sectionsPagerAdapter;
 
     Resources resources;
 
@@ -48,27 +49,18 @@ public class JournalActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_journal);
+
         resources = getResources();
-
-        toolbar = findViewById(R.id.journal_toolbar);
-        setSupportActionBar(toolbar);
-
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
         viewModel = new ViewModelProvider(this).get(JournalViewModel.class);
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
-
-        tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
-
-        fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
-
         journalTitle = findViewById(R.id.journal_title);
+        fab = findViewById(R.id.fab);
+        tabs = findViewById(R.id.tabs);
+        viewPager = findViewById(R.id.view_pager);
+        toolbar = findViewById(R.id.journal_toolbar);
+
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
 
@@ -86,6 +78,14 @@ public class JournalActivity extends AppCompatActivity {
 
             journalTitle.setText(currentJournal.getTitle());
         }
+
+        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), currentJournal.getPages());
+        viewPager.setAdapter(sectionsPagerAdapter);
+
+        tabs.setupWithViewPager(viewPager);
+
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
         journalTitle.addTextChangedListener(new TextWatcher() {
             @Override

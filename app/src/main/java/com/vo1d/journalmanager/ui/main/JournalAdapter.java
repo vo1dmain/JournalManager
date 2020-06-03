@@ -1,4 +1,4 @@
-package com.vo1d.journalmanager.ui.journal;
+package com.vo1d.journalmanager.ui.main;
 
 import android.view.LayoutInflater;
 import android.view.View;

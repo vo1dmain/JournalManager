@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class Journal {
     private String title;
 
     @TypeConverters({PagesConverter.class})
-    private List<JournalPage> pages = new LinkedList<>();
+    private List<JournalPage> pages = new LinkedList<>(Collections.nCopies(1, new JournalPage("1")));
 
     public Journal(String title) {
         this.title = title;
