@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class JournalKeyProvider extends ItemKeyProvider<Long> {
 
-    private JournalAdapter adapter;
+    private MainAdapter adapter;
     private RecyclerView recyclerView;
 
-    public JournalKeyProvider(JournalAdapter adapter, RecyclerView recyclerView) {
+    public JournalKeyProvider(MainAdapter adapter, RecyclerView recyclerView) {
         super(SCOPE_MAPPED);
         this.adapter = adapter;
         this.recyclerView = recyclerView;

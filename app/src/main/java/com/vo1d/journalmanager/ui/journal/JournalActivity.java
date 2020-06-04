@@ -21,7 +21,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.vo1d.journalmanager.MainActivity;
 import com.vo1d.journalmanager.R;
 import com.vo1d.journalmanager.data.Journal;
-import com.vo1d.journalmanager.data.JournalsViewModel;
+import com.vo1d.journalmanager.data.Page;
+import com.vo1d.journalmanager.data.PagesViewModel;
+import com.vo1d.journalmanager.data.PagesViewModelFactory;
 
 import java.util.Objects;
 
@@ -42,7 +44,7 @@ public class JournalActivity extends AppCompatActivity {
 
     Resources resources;
 
-    JournalsViewModel viewModel;
+    PagesViewModel pViewModel;
     Journal currentJournal;
 
     @Override
@@ -51,7 +53,6 @@ public class JournalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_journal);
 
         resources = getResources();
-        viewModel = new ViewModelProvider(this).get(JournalsViewModel.class);
 
         journalTitle = findViewById(R.id.journal_title);
         fab = findViewById(R.id.fab);
@@ -78,6 +79,8 @@ public class JournalActivity extends AppCompatActivity {
 
             journalTitle.setText(currentJournal.getTitle());
         }
+
+        pViewModel = new ViewModelProvider(this, new PagesViewModelFactory(this.getApplication(), id)).get(PagesViewModel.class);
 
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(sectionsPagerAdapter);
@@ -111,13 +114,13 @@ public class JournalActivity extends AppCompatActivity {
     }
 
     private void addNewPage() {
+        pViewModel.insert(new Page(currentJournal.getId(), "Title"));
     }
 
     private void saveJournal() {
         String title = Objects.requireNonNull(journalTitle.getText()).toString();
         currentJournal.setTitle(title);
 
-        viewModel.update(currentJournal);
         menu.findItem(R.id.save_journal).setEnabled(false);
     }
 

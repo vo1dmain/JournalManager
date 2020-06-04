@@ -13,7 +13,7 @@ class JournalsRepository {
     private LiveData<List<Journal>> allJournals;
 
     JournalsRepository(Application application) {
-        JournalDatabase database = JournalDatabase.getInstance(application);
+        JournalsDatabase database = JournalsDatabase.getInstance(application);
         journalDao = database.journalDao();
         allJournals = journalDao.getAllJournals();
     }

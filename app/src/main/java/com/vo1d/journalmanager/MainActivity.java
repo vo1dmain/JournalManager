@@ -30,7 +30,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.vo1d.journalmanager.data.Journal;
 import com.vo1d.journalmanager.data.JournalsViewModel;
 import com.vo1d.journalmanager.ui.journal.JournalActivity;
-import com.vo1d.journalmanager.ui.main.JournalAdapter;
+import com.vo1d.journalmanager.ui.main.MainAdapter;
 import com.vo1d.journalmanager.ui.main.JournalDetailsLookup;
 import com.vo1d.journalmanager.ui.main.JournalKeyProvider;
 import com.vo1d.journalmanager.ui.main.CreateNewJournalDialog;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
     Resources resources;
     JournalsViewModel viewModel;
 
-    JournalAdapter adapter;
+    MainAdapter adapter;
     SelectionTracker<Long> tracker;
 
     ActionMode actionMode;
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
         setContentView(R.layout.activity_main);
 
         resources = getResources();
-        adapter = new JournalAdapter();
+        adapter = new MainAdapter();
         viewModel = new ViewModelProvider(this).get(JournalsViewModel.class);
 
         recyclerView = findViewById(R.id.recycler_view);

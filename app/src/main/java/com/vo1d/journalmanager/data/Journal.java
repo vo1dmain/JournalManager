@@ -37,7 +37,7 @@ public class Journal {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Journal) {
-            Journal j2 = ((Journal) obj);
+            Journal j2 = (Journal) obj;
 
             boolean c1 = (this.id == j2.getId());
 

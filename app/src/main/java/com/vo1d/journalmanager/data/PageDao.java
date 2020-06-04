@@ -1,5 +1,6 @@
 package com.vo1d.journalmanager.data;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -21,5 +22,5 @@ interface PageDao {
     void delete(Page page);
 
     @Query("SELECT * FROM journal_page_table WHERE journalId=:journalId")
-    List<Page> findPagesForJournal(final int journalId);
+    LiveData<List<Page>> findPagesForJournal(final int journalId);
 }

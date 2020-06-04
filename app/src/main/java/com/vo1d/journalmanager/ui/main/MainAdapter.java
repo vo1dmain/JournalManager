@@ -18,7 +18,7 @@ import com.vo1d.journalmanager.data.Journal;
 import java.util.LinkedList;
 import java.util.List;
 
-public class JournalAdapter extends ListAdapter<Journal, JournalAdapter.JournalViewHolder> {
+public class MainAdapter extends ListAdapter<Journal, MainAdapter.JournalViewHolder> {
     private static final DiffUtil.ItemCallback<Journal> DIFF_CALLBACK = new DiffUtil.ItemCallback<Journal>() {
         @Override
         public boolean areItemsTheSame(@NonNull Journal oldItem, @NonNull Journal newItem) {
@@ -36,7 +36,7 @@ public class JournalAdapter extends ListAdapter<Journal, JournalAdapter.JournalV
 
     private SelectionTracker<Long> tracker;
 
-    public JournalAdapter() {
+    public MainAdapter() {
         super(DIFF_CALLBACK);
         setHasStableIds(true);
     }

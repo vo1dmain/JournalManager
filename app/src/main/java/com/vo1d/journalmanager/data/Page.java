@@ -1,5 +1,6 @@
 package com.vo1d.journalmanager.data;
 
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -41,5 +42,21 @@ public class Page {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        assert obj != null;
+        if (obj instanceof Page) {
+            Page j2 = (Page) obj;
+
+            boolean c1 = (this.id == j2.getId());
+
+            boolean c2 = (this.title.contentEquals(j2.title));
+
+            return c1 && c2;
+        } else {
+            return obj.equals(this);
+        }
     }
 }

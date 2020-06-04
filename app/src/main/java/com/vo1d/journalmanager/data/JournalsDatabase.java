@@ -9,10 +9,10 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Journal.class, Page.class}, version = 6)
-abstract class JournalDatabase extends RoomDatabase {
+@Database(entities = {Journal.class, Page.class}, version = 1)
+abstract class JournalsDatabase extends RoomDatabase {
 
-    private static JournalDatabase instance;
+    private static JournalsDatabase instance;
     private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
@@ -21,10 +21,10 @@ abstract class JournalDatabase extends RoomDatabase {
         }
     };
 
-    static synchronized JournalDatabase getInstance(Context context) {
+    static synchronized JournalsDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    JournalDatabase.class, "journal_database")
+                    JournalsDatabase.class, "journal_database")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build();
@@ -40,7 +40,7 @@ abstract class JournalDatabase extends RoomDatabase {
         private JournalDao journalDao;
         private PageDao pageDao;
 
-        private PopulateDbAsyncTask(JournalDatabase db) {
+        private PopulateDbAsyncTask(JournalsDatabase db) {
             journalDao = db.journalDao();
             pageDao = db.pageDao();
         }
