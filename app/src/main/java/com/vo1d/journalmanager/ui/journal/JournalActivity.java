@@ -20,8 +20,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.vo1d.journalmanager.MainActivity;
 import com.vo1d.journalmanager.R;
-import com.vo1d.journalmanager.journal.Journal;
-import com.vo1d.journalmanager.journal.JournalViewModel;
+import com.vo1d.journalmanager.data.Journal;
+import com.vo1d.journalmanager.data.JournalsViewModel;
 
 import java.util.Objects;
 
@@ -42,7 +42,7 @@ public class JournalActivity extends AppCompatActivity {
 
     Resources resources;
 
-    JournalViewModel viewModel;
+    JournalsViewModel viewModel;
     Journal currentJournal;
 
     @Override
@@ -51,7 +51,7 @@ public class JournalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_journal);
 
         resources = getResources();
-        viewModel = new ViewModelProvider(this).get(JournalViewModel.class);
+        viewModel = new ViewModelProvider(this).get(JournalsViewModel.class);
 
         journalTitle = findViewById(R.id.journal_title);
         fab = findViewById(R.id.fab);
@@ -79,7 +79,7 @@ public class JournalActivity extends AppCompatActivity {
             journalTitle.setText(currentJournal.getTitle());
         }
 
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), currentJournal.getPages());
+        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(sectionsPagerAdapter);
 
         tabs.setupWithViewPager(viewPager);
@@ -108,6 +108,9 @@ public class JournalActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+    private void addNewPage() {
     }
 
     private void saveJournal() {
@@ -144,6 +147,9 @@ public class JournalActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.add_page:
+                addNewPage();
+                return true;
             case R.id.save_journal:
                 saveJournal();
                 String mes = resources.getString(R.string.journal_update_success_message, currentJournal.getTitle());

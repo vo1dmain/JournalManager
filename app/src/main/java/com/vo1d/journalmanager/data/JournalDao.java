@@ -1,4 +1,4 @@
-package com.vo1d.journalmanager.journal;
+package com.vo1d.journalmanager.data;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -13,13 +13,13 @@ import java.util.List;
 interface JournalDao {
 
     @Insert
-    void insert(Journal journal);
+    long insert(Journal journal);
 
     @Update
     void update(Journal journal);
 
     @Delete
-    void delete(Journal journal);
+    void delete(Journal... journals);
 
     @Query("DELETE FROM journal_table")
     void deleteAllJournals();

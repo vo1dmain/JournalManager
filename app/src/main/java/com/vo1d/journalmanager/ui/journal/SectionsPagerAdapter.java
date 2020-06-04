@@ -6,9 +6,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.vo1d.journalmanager.journal.JournalPage;
+import com.vo1d.journalmanager.data.Page;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,22 +17,15 @@ import java.util.List;
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-    private List<JournalPage> pages;
+    private List<Page> pages;
     private List<String> tabTitles;
     private List<Fragment> pageFragments;
 
-    SectionsPagerAdapter(FragmentManager fm, List<JournalPage> pages) {
+    SectionsPagerAdapter(FragmentManager fm) {
         super(fm, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        pages = new LinkedList<>();
         tabTitles = new LinkedList<>();
-
-        this.pages = pages;
-
-        for (JournalPage jp :
-                pages) {
-            tabTitles.add(jp.getTitle());
-        }
-
-        pageFragments = new LinkedList<>(Collections.nCopies(pages.size(), new Fragment()));
+        pageFragments = new LinkedList<>();
     }
 
     @NonNull

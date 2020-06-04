@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:title="@string/menu_journal_add_title"
+    <item android:id="@+id/add_page"
+        android:title="@string/menu_journal_add_title"
         android:icon="@drawable/ic_add"
         android:visible="true"
         app:showAsAction="ifRoom"/>

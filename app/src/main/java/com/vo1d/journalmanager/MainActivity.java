@@ -27,8 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.vo1d.journalmanager.journal.Journal;
-import com.vo1d.journalmanager.journal.JournalViewModel;
+import com.vo1d.journalmanager.data.Journal;
+import com.vo1d.journalmanager.data.JournalsViewModel;
 import com.vo1d.journalmanager.ui.journal.JournalActivity;
 import com.vo1d.journalmanager.ui.main.JournalAdapter;
 import com.vo1d.journalmanager.ui.main.JournalDetailsLookup;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
     public static final int RESULT_DELETE = 2;
 
     Resources resources;
-    JournalViewModel viewModel;
+    JournalsViewModel viewModel;
 
     JournalAdapter adapter;
     SelectionTracker<Long> tracker;
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
 
         resources = getResources();
         adapter = new JournalAdapter();
-        viewModel = new ViewModelProvider(this).get(JournalViewModel.class);
+        viewModel = new ViewModelProvider(this).get(JournalsViewModel.class);
 
         recyclerView = findViewById(R.id.recycler_view);
         buttonCreate = findViewById(R.id.button_create_journal);

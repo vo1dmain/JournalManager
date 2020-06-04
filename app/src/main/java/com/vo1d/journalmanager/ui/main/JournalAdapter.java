@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vo1d.journalmanager.R;
-import com.vo1d.journalmanager.journal.Journal;
+import com.vo1d.journalmanager.data.Journal;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -123,7 +123,7 @@ public class JournalAdapter extends ListAdapter<Journal, JournalAdapter.JournalV
             });
 
 
-            tracker.addObserver(new SelectionTracker.SelectionObserver() {
+            tracker.addObserver(new SelectionTracker.SelectionObserver<Long>() {
                 @Override
                 public void onSelectionChanged() {
                     if (tracker.hasSelection()) {

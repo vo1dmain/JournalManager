@@ -1,4 +1,4 @@
-package com.vo1d.journalmanager.journal;
+package com.vo1d.journalmanager.data;
 
 import android.app.Application;
 import android.os.AsyncTask;
@@ -8,11 +8,11 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-class JournalRepository {
+class JournalsRepository {
     private JournalDao journalDao;
     private LiveData<List<Journal>> allJournals;
 
-    JournalRepository(Application application) {
+    JournalsRepository(Application application) {
         JournalDatabase database = JournalDatabase.getInstance(application);
         journalDao = database.journalDao();
         allJournals = journalDao.getAllJournals();
@@ -26,8 +26,8 @@ class JournalRepository {
         new UpdateJournalAsyncTask(journalDao).execute(journal);
     }
 
-    void delete(Journal journal) {
-        new DeleteJournalAsyncTask(journalDao).execute(journal);
+    void delete(Journal... journals) {
+        new DeleteJournalAsyncTask(journalDao).execute(journals);
     }
 
     void deleteAllJournals() {
@@ -88,7 +88,10 @@ class JournalRepository {
 
         @Override
         protected Void doInBackground(Journal... journals) {
-            journalDao.delete(journals[0]);
+            for (Journal j :
+                    journals) {
+                journalDao.delete(j);
+            }
             return null;
         }
     }

@@ -1,15 +1,11 @@
-package com.vo1d.journalmanager.journal;
+package com.vo1d.journalmanager.data;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-@Entity(tableName = "journal_table")
+@Entity(tableName = "journal_table", indices = {@Index(value = {"id"}, unique = true)})
 public class Journal {
 
     @PrimaryKey(autoGenerate = true)
@@ -17,9 +13,6 @@ public class Journal {
 
     @ColumnInfo(name = "title")
     private String title;
-
-    @TypeConverters({PagesConverter.class})
-    private List<JournalPage> pages = new LinkedList<>(Collections.nCopies(1, new JournalPage("1")));
 
     public Journal(String title) {
         this.title = title;
@@ -39,14 +32,6 @@ public class Journal {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public List<JournalPage> getPages() {
-        return pages;
-    }
-
-    public void setPages(List<JournalPage> pages) {
-        this.pages = pages;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.vo1d.journalmanager.journal;
+package com.vo1d.journalmanager.data;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -9,7 +9,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Journal.class}, version = 2)
+@Database(entities = {Journal.class, Page.class}, version = 6)
 abstract class JournalDatabase extends RoomDatabase {
 
     private static JournalDatabase instance;
@@ -33,19 +33,26 @@ abstract class JournalDatabase extends RoomDatabase {
     }
 
     public abstract JournalDao journalDao();
+    public abstract PageDao pageDao();
 
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private JournalDao journalDao;
+        private PageDao pageDao;
 
         private PopulateDbAsyncTask(JournalDatabase db) {
             journalDao = db.journalDao();
+            pageDao = db.pageDao();
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             for (int i = 1; i <= 10; i++) {
-                journalDao.insert(new Journal(Integer.toString(i)));
+                Journal j = new Journal(Integer.toString(i));
+                long id = journalDao.insert(j);
+
+                Page p = new Page((int) id, j.getTitle() + "1");
+                pageDao.insert(p);
             }
             return null;
         }

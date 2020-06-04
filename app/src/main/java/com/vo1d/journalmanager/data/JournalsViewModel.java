@@ -1,4 +1,4 @@
-package com.vo1d.journalmanager.journal;
+package com.vo1d.journalmanager.data;
 
 import android.app.Application;
 
@@ -11,15 +11,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class JournalViewModel extends AndroidViewModel {
-    private JournalRepository repository;
+public class JournalsViewModel extends AndroidViewModel {
+    private JournalsRepository repository;
     private LiveData<List<Journal>> allJournals;
 
     private LiveData<List<Journal>> selectedJournals = new MutableLiveData<>(new LinkedList<>());
 
-    public JournalViewModel(@NonNull Application application) {
+    public JournalsViewModel(@NonNull Application application) {
         super(application);
-        repository = new JournalRepository(application);
+        repository = new JournalsRepository(application);
         allJournals = repository.getAllJournals();
     }
 
@@ -31,7 +31,7 @@ public class JournalViewModel extends AndroidViewModel {
         repository.update(journal);
     }
 
-    public void delete(Journal journal) {
+    public void delete(Journal... journal) {
         repository.delete(journal);
     }
 
@@ -40,10 +40,7 @@ public class JournalViewModel extends AndroidViewModel {
     }
 
     public void deleteSelectedJournals() {
-        for (Journal j :
-                Objects.requireNonNull(selectedJournals.getValue())) {
-            delete(j);
-        }
+        delete(Objects.requireNonNull(selectedJournals.getValue()).toArray(new Journal[0]));
 
         selectedJournals.getValue().clear();
     }
