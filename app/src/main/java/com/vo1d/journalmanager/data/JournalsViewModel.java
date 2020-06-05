@@ -23,8 +23,12 @@ public class JournalsViewModel extends AndroidViewModel {
         allJournals = repository.getAllJournals();
     }
 
-    public void insert(Journal journal) {
-        repository.insert(journal);
+    public long insert(Journal journal) {
+        return repository.insert(journal);
+    }
+
+    public void insertPage(Page page) {
+        repository.insert(page);
     }
 
     public void update(Journal journal) {

@@ -16,9 +16,9 @@
         <EditText
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:id="@+id/journal_title"
+            android:id="@+id/title"
             android:autofillHints="@null"
-            android:hint="@string/journal_title_hint"
+            android:hint="@string/title_hint"
             android:inputType="textCapSentences"
             android:maxLength="20"
             android:singleLine="true" />

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Journal manager</string>
-    <string name="journal_title_hint">Write your journal title here</string>
+    <string name="title_hint">Write your title</string>
     <string name="create_first_journal_hint">Tap the \"+\" to add your first journal</string>
     <string name="menu_main_search_action_title">Search</string>
     <string name="menu_main_delete_all_title">Delete all</string>
@@ -20,4 +20,6 @@
     <string name="selected_count_title">Selected: %1$d</string>
     <string name="select_all">All</string>
     <string name="menu_journal_add_title">Add new page</string>
+    <string name="page_one_default_title">Page 1</string>
+    <string name="create_page_dialog_title">Create new page</string>
 </resources>

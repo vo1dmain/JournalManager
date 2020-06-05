@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Менеджер журналов</string>
-    <string name="journal_title_hint">Введите название журнала</string>
+    <string name="title_hint">Введите название</string>
     <string name="create_first_journal_hint">Нажмите на \"+\", чтобы создать журнал</string>
     <string name="create_journal_dialog_title">Создать новый журнал</string>
     <string name="create_journal_dialog_negative">Отмена</string>
@@ -21,4 +21,6 @@
     <string name="select_all">Все</string>
     <string name="selected_count_title">Выбрано: %1$d</string>
     <string name="menu_journal_add_title">Добавить страницу</string>
+    <string name="page_one_default_title">Страница 1</string>
+    <string name="create_page_dialog_title">Создать новую страницу</string>
 </resources>

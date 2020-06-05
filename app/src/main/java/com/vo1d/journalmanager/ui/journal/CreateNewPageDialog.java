@@ -1,4 +1,4 @@
-package com.vo1d.journalmanager.ui.main;
+package com.vo1d.journalmanager.ui.journal;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -17,7 +17,7 @@ import com.vo1d.journalmanager.R;
 
 import java.util.Objects;
 
-public class CreateNewJournalDialog extends AppCompatDialogFragment {
+public class CreateNewPageDialog extends AppCompatDialogFragment {
     private DialogListener mListener;
 
     @Override
@@ -36,7 +36,7 @@ public class CreateNewJournalDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstance) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setView(View.inflate(requireActivity(), R.layout.dialog_create, null))
-                .setTitle(R.string.create_journal_dialog_title)
+                .setTitle(R.string.create_page_dialog_title)
                 .setPositiveButton(R.string.create_journal_dialog_positive, (dialog, id) -> mListener.onDialogPositiveClick(this))
                 .setNegativeButton(R.string.create_journal_dialog_negative, (dialog, id) -> mListener.onDialogNegativeClick(this));
         AlertDialog d = builder.create();

@@ -1,7 +1,6 @@
 package com.vo1d.journalmanager.data;
 
 import androidx.annotation.Nullable;
-import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;

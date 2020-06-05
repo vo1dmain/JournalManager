@@ -7,16 +7,21 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.vo1d.journalmanager.MainActivity;
 import com.vo1d.journalmanager.R;
@@ -27,7 +32,7 @@ import com.vo1d.journalmanager.data.PagesViewModelFactory;
 
 import java.util.Objects;
 
-public class JournalActivity extends AppCompatActivity {
+public class JournalActivity extends AppCompatActivity implements CreateNewPageDialog.DialogListener {
 
     public static final String EXTRA_TITLE =
             "com.vo1d.journalmanager.ui.journal.EXTRA_TITLE";
@@ -39,10 +44,11 @@ public class JournalActivity extends AppCompatActivity {
     FloatingActionButton fab;
     Menu menu;
     TabLayout tabs;
-    ViewPager viewPager;
-    SectionsPagerAdapter sectionsPagerAdapter;
+    ViewPager2 viewPager;
+    PagesAdapter pagesAdapter;
 
     Resources resources;
+    Intent data;
 
     PagesViewModel pViewModel;
     Journal currentJournal;
@@ -54,7 +60,7 @@ public class JournalActivity extends AppCompatActivity {
 
         resources = getResources();
 
-        journalTitle = findViewById(R.id.journal_title);
+        journalTitle = findViewById(R.id.title);
         fab = findViewById(R.id.fab);
         tabs = findViewById(R.id.tabs);
         viewPager = findViewById(R.id.view_pager);
@@ -63,18 +69,18 @@ public class JournalActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
+        data = getIntent();
 
-        int id = intent.getIntExtra(EXTRA_ID, -1);
+        int id = data.getIntExtra(EXTRA_ID, -1);
 
         if (id == -1) {
-            setResult(RESULT_CANCELED, intent);
+            setResult(RESULT_CANCELED, data);
             finish();
         }
 
-        if (intent.hasExtra(EXTRA_TITLE)) {
-            setResult(RESULT_OK);
-            currentJournal = new Journal(intent.getStringExtra(EXTRA_TITLE));
+        if (data.hasExtra(EXTRA_TITLE)) {
+            setResult(RESULT_OK, data);
+            currentJournal = new Journal(data.getStringExtra(EXTRA_TITLE));
             currentJournal.setId(id);
 
             journalTitle.setText(currentJournal.getTitle());
@@ -82,12 +88,18 @@ public class JournalActivity extends AppCompatActivity {
 
         pViewModel = new ViewModelProvider(this, new PagesViewModelFactory(this.getApplication(), id)).get(PagesViewModel.class);
 
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(sectionsPagerAdapter);
+        pagesAdapter = new PagesAdapter();
 
-        tabs.setupWithViewPager(viewPager);
+        pViewModel.getAllPages().observe(this, list -> pagesAdapter.submitList(list));
 
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        viewPager.setAdapter(pagesAdapter);
+
+        new TabLayoutMediator(tabs, viewPager, (tab, position)
+                -> tab.setText(Objects.requireNonNull(pViewModel.getAllPages().getValue()).get(position).getTitle()))
+                .attach();
+
+        fab.setOnClickListener(view
+                -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
 
         journalTitle.addTextChangedListener(new TextWatcher() {
@@ -98,7 +110,7 @@ public class JournalActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (Objects.requireNonNull(intent.getStringExtra(EXTRA_TITLE)).contentEquals(s)) {
+                if (Objects.requireNonNull(data.getStringExtra(EXTRA_TITLE)).contentEquals(s)) {
                     menu.findItem(R.id.save_journal).setEnabled(false);
                 } else if (!s.toString().trim().isEmpty()) {
                     menu.findItem(R.id.save_journal).setEnabled(true);
@@ -109,17 +121,27 @@ public class JournalActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                saveJournal();
             }
         });
-    }
 
-    private void addNewPage() {
-        pViewModel.insert(new Page(currentJournal.getId(), "Title"));
+        journalTitle.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus();
+            }
+            return false;
+        });
     }
 
     private void saveJournal() {
         String title = Objects.requireNonNull(journalTitle.getText()).toString();
         currentJournal.setTitle(title);
+
+        Intent data = new Intent();
+        data.putExtra(EXTRA_ID, currentJournal.getId());
+        data.putExtra(EXTRA_TITLE, currentJournal.getTitle());
+
+        setResult(RESULT_OK, data);
 
         menu.findItem(R.id.save_journal).setEnabled(false);
     }
@@ -151,7 +173,7 @@ public class JournalActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_page:
-                addNewPage();
+                openCreateDialog();
                 return true;
             case R.id.save_journal:
                 saveJournal();
@@ -170,5 +192,29 @@ public class JournalActivity extends AppCompatActivity {
     protected void onDestroy() {
         saveJournal();
         super.onDestroy();
+    }
+
+    @Override
+    public void onDialogPositiveClick(AppCompatDialogFragment dialog) {
+        EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.title);
+
+        String title = et.getText().toString();
+
+        Page page = new Page(currentJournal.getId(), title);
+
+        pViewModel.insert(page);
+    }
+
+    @Override
+    public void onDialogNegativeClick(AppCompatDialogFragment dialog) {
+    }
+
+    private void openCreateDialog() {
+        try {
+            DialogFragment newFragment = new CreateNewPageDialog();
+            newFragment.show(getSupportFragmentManager(), "Create new page");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

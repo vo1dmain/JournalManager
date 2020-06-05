@@ -10,16 +10,29 @@ import java.util.concurrent.ExecutionException;
 
 class JournalsRepository {
     private JournalDao journalDao;
+    private PageDao pageDao;
     private LiveData<List<Journal>> allJournals;
 
     JournalsRepository(Application application) {
         JournalsDatabase database = JournalsDatabase.getInstance(application);
         journalDao = database.journalDao();
+        pageDao = database.pageDao();
         allJournals = journalDao.getAllJournals();
     }
 
-    void insert(Journal journal) {
-        new InsertJournalAsyncTask(journalDao).execute(journal);
+    long insert(Journal journal) {
+        try {
+            InsertJournalAsyncTask task = new InsertJournalAsyncTask(journalDao);
+            task.execute(journal);
+            return task.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    void insert(Page page) {
+        new InsertPageAsyncTask(pageDao).execute(page);
     }
 
     void update(Journal journal) {
@@ -48,7 +61,7 @@ class JournalsRepository {
         }
     }
 
-    private static class InsertJournalAsyncTask extends AsyncTask<Journal, Void, Void> {
+    private static class InsertJournalAsyncTask extends AsyncTask<Journal, Void, Long> {
 
         private JournalDao journalDao;
 
@@ -57,8 +70,22 @@ class JournalsRepository {
         }
 
         @Override
-        protected Void doInBackground(Journal... journals) {
-            journalDao.insert(journals[0]);
+        protected Long doInBackground(Journal... journals) {
+            return journalDao.insert(journals[0]);
+        }
+    }
+
+    private static class InsertPageAsyncTask extends AsyncTask<Page, Void, Void> {
+
+        private PageDao pageDao;
+
+        private InsertPageAsyncTask(PageDao pageDao) {
+            this.pageDao = pageDao;
+        }
+
+        @Override
+        protected Void doInBackground(Page... pages) {
+            pageDao.insert(pages[0]);
             return null;
         }
     }
@@ -88,10 +115,7 @@ class JournalsRepository {
 
         @Override
         protected Void doInBackground(Journal... journals) {
-            for (Journal j :
-                    journals) {
-                journalDao.delete(j);
-            }
+            journalDao.delete(journals);
             return null;
         }
     }

@@ -29,11 +29,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.vo1d.journalmanager.data.Journal;
 import com.vo1d.journalmanager.data.JournalsViewModel;
+import com.vo1d.journalmanager.data.Page;
 import com.vo1d.journalmanager.ui.journal.JournalActivity;
-import com.vo1d.journalmanager.ui.main.MainAdapter;
+import com.vo1d.journalmanager.ui.main.CreateNewJournalDialog;
 import com.vo1d.journalmanager.ui.main.JournalDetailsLookup;
 import com.vo1d.journalmanager.ui.main.JournalKeyProvider;
-import com.vo1d.journalmanager.ui.main.CreateNewJournalDialog;
+import com.vo1d.journalmanager.ui.main.MainAdapter;
 
 import java.util.List;
 import java.util.Objects;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
                     return true;
                 case R.id.delete_selected:
                     viewModel.deleteSelectedJournals();
+                    mode.finish();
                     return true;
                 default:
                     return false;
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == OPEN_JOURNAL_REQUEST) {
-             if (resultCode == RESULT_DELETE) {
+            if (resultCode == RESULT_DELETE) {
                 assert data != null;
 
                 String title = data.getStringExtra(JournalActivity.EXTRA_TITLE);
@@ -208,15 +210,19 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
 
                 String mes = resources.getString(R.string.journal_delete_success_message, title);
                 Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                assert data != null;
+                String title = data.getStringExtra(JournalActivity.EXTRA_TITLE);
+                String mes = resources.getString(R.string.journal_update_failure_message, title);
+                Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
+                return;
+            } else if (resultCode == RESULT_OK) {
+                assert data != null;
+                Journal j = new Journal(data.getStringExtra(JournalActivity.EXTRA_TITLE));
+                j.setId(data.getIntExtra(JournalActivity.EXTRA_ID, -1));
+
+                viewModel.update(j);
             }
-             else if (resultCode == RESULT_CANCELED)
-             {
-                 assert data != null;
-                 String title = data.getStringExtra(JournalActivity.EXTRA_TITLE);
-                 String mes = resources.getString(R.string.journal_update_failure_message, title);
-                 Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
-                 return;
-             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -224,12 +230,16 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
     @Override
     public void onDialogPositiveClick(@NonNull AppCompatDialogFragment dialog) {
         try {
-            EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.journal_title);
+            EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.title);
 
             String title = et.getText().toString();
 
             Journal journal = new Journal(title);
-            viewModel.insert(journal);
+            int id = (int) viewModel.insert(journal);
+
+            Page page = new Page(id, resources.getString(R.string.page_one_default_title));
+
+            viewModel.insertPage(page);
 
             String mes = resources.getString(R.string.journal_create_success_message, title);
             Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();

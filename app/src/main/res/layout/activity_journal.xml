@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
+    android:focusable="true"
     tools:context=".ui.journal.JournalActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -23,10 +24,10 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/journal_title"
+                android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/journal_title_hint"
+                android:hint="@string/title_hint"
                 android:imeOptions="actionDone"
                 android:importantForAutofill="no"
                 android:inputType="textCapSentences"
@@ -43,15 +44,17 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimaryVariant"
             app:tabGravity="fill"
-            app:tabMode="scrollable" />
+            app:tabMode="scrollable"
+            app:tabIndicatorColor="@android:color/white"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true"
+        android:orientation="horizontal"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
