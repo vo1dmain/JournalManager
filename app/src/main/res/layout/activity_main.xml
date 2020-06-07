@@ -7,42 +7,41 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/hint_text"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/list_is_empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
         android:gravity="center"
-        android:text="@string/create_first_journal_hint"
-        android:textSize="20sp"
+        android:text="@string/is_empty_message"
+        android:textSize="16sp"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
         android:scrollbars="vertical"
         tools:listitem="@layout/card_journal" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/nothing_found_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
+        android:layout_gravity="center"
         android:gravity="center"
-        android:text="@string/nothing_found_message_text"
-        android:textSize="20sp"
+        android:text="@string/nothing_found_message"
+        android:textSize="16sp"
         android:visibility="gone" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/button_create_journal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:tint="@android:color/white"
+        android:elevation="0dp"
+        android:text="@string/create_journal_fab_label"
         app:fabSize="normal"
-        app:srcCompat="@drawable/ic_add" />
+        app:icon="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

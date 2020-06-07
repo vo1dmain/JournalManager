@@ -2,24 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/add_page"
-        android:title="@string/menu_journal_add_title"
+    <item
+        android:id="@+id/add_page"
         android:icon="@drawable/ic_add"
+        android:title="@string/add_page_title"
         android:visible="true"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/save_journal"
-        android:icon="@drawable/ic_save"
         android:enabled="false"
-        android:title="@string/menu_journal_save_title"
+        android:icon="@drawable/ic_save"
+        android:title="@string/save_journal_title"
         android:visible="true"
         app:showAsAction="never" />
 
-    <item android:title="@string/menu_journal_delete_title"
+    <item
         android:id="@+id/delete_journal"
-        android:visible="true"
-        android:icon="@drawable/ic_delete"
         android:enabled="true"
-        app:showAsAction="never"/>
+        android:icon="@drawable/ic_delete"
+        android:title="@string/delete_journal_title"
+        android:visible="true"
+        app:showAsAction="never" />
 </menu>

@@ -2,26 +2,28 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="16dp">
 
     <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:hintEnabled="false"
+        android:layout_height="wrap_content"
         app:counterEnabled="true"
-        app:counterMaxLength="20">
+        app:counterMaxLength="20"
+        app:hintEnabled="false"
+        app:endIconMode="clear_text">
 
-        <EditText
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/title"
-            android:autofillHints="@null"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="@string/title_hint"
             android:inputType="textCapSentences"
             android:maxLength="20"
-            android:singleLine="true" />
+            android:singleLine="true"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

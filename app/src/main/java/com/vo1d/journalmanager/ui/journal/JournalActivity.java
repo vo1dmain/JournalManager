@@ -5,14 +5,16 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -29,29 +31,37 @@ import com.vo1d.journalmanager.data.Journal;
 import com.vo1d.journalmanager.data.Page;
 import com.vo1d.journalmanager.data.PagesViewModel;
 import com.vo1d.journalmanager.data.PagesViewModelFactory;
+import com.vo1d.journalmanager.ui.ConfirmationDialog;
+import com.vo1d.journalmanager.ui.CreationDialog;
 
 import java.util.Objects;
 
-public class JournalActivity extends AppCompatActivity implements CreateNewPageDialog.DialogListener {
+public class JournalActivity extends AppCompatActivity {
 
     public static final String EXTRA_TITLE =
             "com.vo1d.journalmanager.ui.journal.EXTRA_TITLE";
     public static final String EXTRA_ID =
             "com.vo1d.journalmanager.ui.journal.EXTRA_ID";
+    private static final int DELETE_JOURNAL = 0;
+    private static final int DELETE_PAGE = 1;
 
     Toolbar toolbar;
     TextInputEditText journalTitle;
     FloatingActionButton fab;
     Menu menu;
-    TabLayout tabs;
-    ViewPager2 viewPager;
-    PagesAdapter pagesAdapter;
+    TabLayout tabLayout;
+    ViewPager2 vp;
+    PagesAdapter adapter;
+    LinearLayout tabStrip;
+    View chosenTab;
 
     Resources resources;
     Intent data;
 
     PagesViewModel pViewModel;
     Journal currentJournal;
+
+    Page currentTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +72,8 @@ public class JournalActivity extends AppCompatActivity implements CreateNewPageD
 
         journalTitle = findViewById(R.id.title);
         fab = findViewById(R.id.fab);
-        tabs = findViewById(R.id.tabs);
-        viewPager = findViewById(R.id.view_pager);
+        tabLayout = findViewById(R.id.tabs);
+        vp = findViewById(R.id.view_pager);
         toolbar = findViewById(R.id.journal_toolbar);
 
         setSupportActionBar(toolbar);
@@ -86,17 +96,27 @@ public class JournalActivity extends AppCompatActivity implements CreateNewPageD
             journalTitle.setText(currentJournal.getTitle());
         }
 
+        tabStrip = (LinearLayout) tabLayout.getChildAt(0);
+
         pViewModel = new ViewModelProvider(this, new PagesViewModelFactory(this.getApplication(), id)).get(PagesViewModel.class);
 
-        pagesAdapter = new PagesAdapter();
+        adapter = new PagesAdapter();
 
-        pViewModel.getAllPages().observe(this, list -> pagesAdapter.submitList(list));
+        pViewModel.getAllPages().observe(this, list -> {
+            adapter.submitList(list);
+            for (int i = 0; i < tabStrip.getChildCount(); i++) {
+                registerForContextMenu(tabStrip.getChildAt(i));
+                tabStrip.getChildAt(i).setTag(list.get(i));
+            }
+        });
 
-        viewPager.setAdapter(pagesAdapter);
+        vp.setAdapter(adapter);
 
-        new TabLayoutMediator(tabs, viewPager, (tab, position)
-                -> tab.setText(Objects.requireNonNull(pViewModel.getAllPages().getValue()).get(position).getTitle()))
-                .attach();
+        new TabLayoutMediator(tabLayout, vp, (tab, position) ->
+                tab.setText(
+                        Objects.requireNonNull(pViewModel.getAllPages().getValue()).get(position).getTitle()
+                )
+        ).attach();
 
         fab.setOnClickListener(view
                 -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -162,6 +182,28 @@ public class JournalActivity extends AppCompatActivity implements CreateNewPageD
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.menu_context, menu);
+
+        currentTag = (Page) v.getTag();
+        chosenTab = v;
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete_page:
+                openConfirmationDialog(DELETE_PAGE);
+                return true;
+            case R.id.rename_page:
+                //TODO: add code
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_journal, menu);
 
@@ -173,15 +215,15 @@ public class JournalActivity extends AppCompatActivity implements CreateNewPageD
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_page:
-                openCreateDialog();
+                openCreationDialog();
                 return true;
             case R.id.save_journal:
                 saveJournal();
                 String mes = resources.getString(R.string.journal_update_success_message, currentJournal.getTitle());
-                Snackbar.make(viewPager, mes, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(vp, mes, Snackbar.LENGTH_LONG).show();
                 return true;
             case R.id.delete_journal:
-                deleteJournal();
+                openConfirmationDialog(DELETE_JOURNAL);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -194,27 +236,65 @@ public class JournalActivity extends AppCompatActivity implements CreateNewPageD
         super.onDestroy();
     }
 
-    @Override
-    public void onDialogPositiveClick(AppCompatDialogFragment dialog) {
-        EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.title);
+    private void openCreationDialog() {
+        CreationDialog creationDialog = new CreationDialog(R.string.create_page_dialog_title);
 
-        String title = et.getText().toString();
+        creationDialog.setDialogListener(new CreationDialog.DialogListener() {
+            @Override
+            public void onDialogPositiveClick(DialogFragment dialog) {
+                EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.title);
 
-        Page page = new Page(currentJournal.getId(), title);
+                String title = et.getText().toString();
 
-        pViewModel.insert(page);
+                Page page = new Page(currentJournal.getId(), title);
+
+                pViewModel.insert(page);
+            }
+
+            @Override
+            public void onDialogNegativeClick(DialogFragment dialog) {
+                dialog.dismiss();
+            }
+        });
+
+        creationDialog.show(getSupportFragmentManager(), "Create new page");
     }
 
-    @Override
-    public void onDialogNegativeClick(AppCompatDialogFragment dialog) {
-    }
+    private void openConfirmationDialog(int confirmationType) {
+        if (confirmationType == DELETE_JOURNAL) {
+            ConfirmationDialog confirmationDialog = new ConfirmationDialog(R.string.delete_this_journal_confirm_title, R.string.delete_journal_confirm_message);
 
-    private void openCreateDialog() {
-        try {
-            DialogFragment newFragment = new CreateNewPageDialog();
-            newFragment.show(getSupportFragmentManager(), "Create new page");
-        } catch (Exception e) {
-            e.printStackTrace();
+            confirmationDialog.setDialogListener(new ConfirmationDialog.DialogListener() {
+                @Override
+                public void onDialogPositiveClick(DialogFragment dialog) {
+                    deleteJournal();
+                }
+
+                @Override
+                public void onDialogNegativeClick(DialogFragment dialog) {
+                    dialog.dismiss();
+                }
+            });
+
+            confirmationDialog.show(getSupportFragmentManager(), "Delete journal confirmation");
+        } else if (confirmationType == DELETE_PAGE) {
+
+            ConfirmationDialog confirmationDialog = new ConfirmationDialog(R.string.delete_page_confirm_title, R.string.delete_page_confirm_message);
+
+            confirmationDialog.setDialogListener(new ConfirmationDialog.DialogListener() {
+                @Override
+                public void onDialogPositiveClick(DialogFragment dialog) {
+                    unregisterForContextMenu(chosenTab);
+                    pViewModel.delete(currentTag);
+                }
+
+                @Override
+                public void onDialogNegativeClick(DialogFragment dialog) {
+                    dialog.dismiss();
+                }
+            });
+
+            confirmationDialog.show(getSupportFragmentManager(), "Delete page confirmation");
         }
     }
 }

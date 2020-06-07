@@ -13,7 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.DialogFragment;
@@ -25,13 +24,14 @@ import androidx.recyclerview.selection.StorageStrategy;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.vo1d.journalmanager.data.Journal;
 import com.vo1d.journalmanager.data.JournalsViewModel;
 import com.vo1d.journalmanager.data.Page;
+import com.vo1d.journalmanager.ui.ConfirmationDialog;
+import com.vo1d.journalmanager.ui.CreationDialog;
 import com.vo1d.journalmanager.ui.journal.JournalActivity;
-import com.vo1d.journalmanager.ui.main.CreateNewJournalDialog;
 import com.vo1d.journalmanager.ui.main.JournalDetailsLookup;
 import com.vo1d.journalmanager.ui.main.JournalKeyProvider;
 import com.vo1d.journalmanager.ui.main.MainAdapter;
@@ -40,23 +40,28 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class MainActivity extends AppCompatActivity implements CreateNewJournalDialog.DialogListener {
+public class MainActivity
+        extends AppCompatActivity {
 
     public static final int OPEN_JOURNAL_REQUEST = 1;
     public static final int RESULT_DELETE = 2;
+    private static final int DELETE_ALL = 0;
+    private static final int DELETE_SELECTED = 1;
 
-    Resources resources;
-    JournalsViewModel viewModel;
+    private Resources resources;
+    private JournalsViewModel viewModel;
 
-    MainAdapter adapter;
-    SelectionTracker<Long> tracker;
+    private MainAdapter adapter;
+    private SelectionTracker<Long> tracker;
 
-    ActionMode actionMode;
-    RecyclerView recyclerView;
-    FloatingActionButton buttonCreate;
-    TextView nothingFoundTextView;
-    TextView hintTextView;
-    MenuItem deleteAll;
+    private ActionMode actionMode;
+    private RecyclerView recyclerView;
+    private ExtendedFloatingActionButton buttonCreate;
+    private TextView nothingFoundTextView;
+    private TextView listIsEmptyTextView;
+    private MenuItem deleteAll;
+
+    private int visibility;
 
     private ActionMode.Callback callback = new ActionMode.Callback() {
         @Override
@@ -67,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            mode.setTitle(resources.getString(R.string.selected_count_title, tracker.getSelection().size()));
+            mode.setTitle(resources.getString(R.string.selected_count, tracker.getSelection().size()));
             buttonCreate.setVisibility(View.GONE);
             return true;
         }
@@ -79,8 +84,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
                     tracker.setItemsSelected(adapter.getAllIds(), true);
                     return true;
                 case R.id.delete_selected:
-                    viewModel.deleteSelectedJournals();
-                    mode.finish();
+                    openConfirmationDialog(DELETE_SELECTED);
                     return true;
                 default:
                     return false;
@@ -108,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
         recyclerView = findViewById(R.id.recycler_view);
         buttonCreate = findViewById(R.id.button_create_journal);
         nothingFoundTextView = findViewById(R.id.nothing_found_message);
-        hintTextView = findViewById(R.id.hint_text);
+        listIsEmptyTextView = findViewById(R.id.list_is_empty);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
 
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
 
         recyclerView.setHasFixedSize(true);
 
-        buttonCreate.setOnClickListener(view -> openCreateDialog());
+        buttonCreate.setOnClickListener(view -> openCreationDialog());
 
         adapter.setOnItemClickListener(journal -> {
             Intent intent = new Intent(MainActivity.this, JournalActivity.class);
@@ -145,10 +149,10 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
                     actionMode.finish();
                 }
                 recyclerView.setVisibility(View.GONE);
-                hintTextView.setVisibility(View.VISIBLE);
+                listIsEmptyTextView.setVisibility(View.VISIBLE);
             } else {
                 recyclerView.setVisibility(View.VISIBLE);
-                hintTextView.setVisibility(View.GONE);
+                listIsEmptyTextView.setVisibility(View.GONE);
             }
         });
 
@@ -169,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
                     if (actionMode == null) {
                         actionMode = startSupportActionMode(callback);
                     } else {
-                        actionMode.setTitle(resources.getString(R.string.selected_count_title, tracker.getSelection().size()));
+                        actionMode.setTitle(resources.getString(R.string.selected_count, tracker.getSelection().size()));
                     }
                 } else if (!tracker.hasSelection()) {
                     if (actionMode != null) {
@@ -228,32 +232,6 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
     }
 
     @Override
-    public void onDialogPositiveClick(@NonNull AppCompatDialogFragment dialog) {
-        try {
-            EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.title);
-
-            String title = et.getText().toString();
-
-            Journal journal = new Journal(title);
-            int id = (int) viewModel.insert(journal);
-
-            Page page = new Page(id, resources.getString(R.string.page_one_default_title));
-
-            viewModel.insertPage(page);
-
-            String mes = resources.getString(R.string.journal_create_success_message, title);
-            Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onDialogNegativeClick(@NonNull AppCompatDialogFragment dialog) {
-        dialog.dismiss();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
@@ -264,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
             public boolean onMenuItemActionExpand(MenuItem item) {
                 viewModel.getAllJournals().removeObserver(adapter::submitList);
                 buttonCreate.setVisibility(View.GONE);
+                visibility = listIsEmptyTextView.getVisibility();
                 return true;
             }
 
@@ -289,9 +268,11 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
                 if (newText.trim().isEmpty()) {
                     adapter.submitList(viewModel.getAllJournals().getValue());
                     nothingFoundTextView.setVisibility(View.GONE);
+                    listIsEmptyTextView.setVisibility(visibility);
                 } else {
                     List<Journal> filteredList = viewModel.getFilteredJournals(newText);
                     adapter.submitList(filteredList);
+                    listIsEmptyTextView.setVisibility(View.GONE);
                     if (filteredList.size() == 0) {
                         nothingFoundTextView.setVisibility(View.VISIBLE);
                     } else {
@@ -319,8 +300,7 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete_all_journals:
-                viewModel.deleteAllJournals();
-                Snackbar.make(recyclerView, R.string.all_journals_deleted_message, Snackbar.LENGTH_LONG).show();
+                openConfirmationDialog(DELETE_ALL);
                 return true;
             case R.id.show_about:
                 //TODO: add about page
@@ -342,12 +322,78 @@ public class MainActivity extends AppCompatActivity implements CreateNewJournalD
         super.onSaveInstanceState(outState);
     }
 
-    private void openCreateDialog() {
-        try {
-            DialogFragment newFragment = new CreateNewJournalDialog();
-            newFragment.show(getSupportFragmentManager(), "Create new journal");
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void creationDialogPositiveClick(@NonNull DialogFragment dialog) {
+        EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.title);
+
+        String title = et.getText().toString();
+
+        Journal journal = new Journal(title);
+        int id = (int) viewModel.insert(journal);
+
+        Page page = new Page(id, resources.getString(R.string.page_one_default_title));
+
+        viewModel.insertPage(page);
+
+        String mes = resources.getString(R.string.journal_create_success_message, title);
+        Snackbar.make(recyclerView, mes, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void openCreationDialog() {
+        CreationDialog creationDialog = new CreationDialog(R.string.create_journal_dialog_title);
+
+        creationDialog.setDialogListener(new CreationDialog.DialogListener() {
+
+            @Override
+            public void onDialogPositiveClick(DialogFragment dialog) {
+                creationDialogPositiveClick(dialog);
+            }
+
+            @Override
+            public void onDialogNegativeClick(DialogFragment dialog) {
+                dialog.dismiss();
+            }
+        });
+
+        creationDialog.show(getSupportFragmentManager(), "Create new journal");
+    }
+
+    private void openConfirmationDialog(int confirmationType) {
+        if (confirmationType == DELETE_ALL) {
+            ConfirmationDialog confirmationDialog = new ConfirmationDialog(R.string.delete_journals_confirm_title, R.string.delete_all_confirm_message);
+
+            confirmationDialog.setDialogListener(new ConfirmationDialog.DialogListener() {
+                @Override
+                public void onDialogPositiveClick(DialogFragment dialog) {
+                    viewModel.deleteAllJournals();
+                    Snackbar.make(recyclerView, R.string.all_journals_deleted_message, Snackbar.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onDialogNegativeClick(DialogFragment dialog) {
+                    dialog.dismiss();
+                }
+            });
+
+            confirmationDialog.show(getSupportFragmentManager(), "Delete selected confirmation");
+        } else if (confirmationType == DELETE_SELECTED) {
+            String message = resources.getString(R.string.delete_selected_confirm_message, tracker.getSelection().size());
+
+            ConfirmationDialog confirmationDialog = new ConfirmationDialog(R.string.delete_journals_confirm_title, message);
+
+            confirmationDialog.setDialogListener(new ConfirmationDialog.DialogListener() {
+                @Override
+                public void onDialogPositiveClick(DialogFragment dialog) {
+                    viewModel.deleteSelectedJournals();
+                    actionMode.finish();
+                }
+
+                @Override
+                public void onDialogNegativeClick(DialogFragment dialog) {
+                    dialog.dismiss();
+                }
+            });
+
+            confirmationDialog.show(getSupportFragmentManager(), "Delete selected confirmation");
         }
     }
 }

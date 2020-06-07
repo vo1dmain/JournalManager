@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/delete_page"
+        android:title="@string/delete_page_title"
+        android:visible="true" />
+    <item
+        android:id="@+id/rename_page"
+        android:title="@string/rename_page_title"
+        android:visible="true" />
+</menu>

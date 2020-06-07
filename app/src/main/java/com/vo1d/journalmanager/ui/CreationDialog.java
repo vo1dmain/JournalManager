@@ -1,4 +1,4 @@
-package com.vo1d.journalmanager.ui.journal;
+package com.vo1d.journalmanager.ui;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -11,34 +11,33 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.vo1d.journalmanager.R;
 
 import java.util.Objects;
 
-public class CreateNewPageDialog extends AppCompatDialogFragment {
+public class CreationDialog extends DialogFragment {
     private DialogListener mListener;
+    private int titleId;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        try {
-            mListener = (DialogListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement NoticeDialogListener");
-        }
+    public CreationDialog(int titleId) {
+        this.titleId = titleId;
+    }
+
+    public void setDialogListener(DialogListener listener) {
+        mListener = listener;
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstance) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        builder.setView(View.inflate(requireActivity(), R.layout.dialog_create, null))
-                .setTitle(R.string.create_page_dialog_title)
-                .setPositiveButton(R.string.create_journal_dialog_positive, (dialog, id) -> mListener.onDialogPositiveClick(this))
-                .setNegativeButton(R.string.create_journal_dialog_negative, (dialog, id) -> mListener.onDialogNegativeClick(this));
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
+        builder.setTitle(titleId)
+                .setView(View.inflate(requireActivity(), R.layout.dialog_create, null))
+                .setPositiveButton(R.string.dialog_ok, (dialog, id) -> mListener.onDialogPositiveClick(this))
+                .setNegativeButton(R.string.dialog_cancel, (dialog, id) -> mListener.onDialogNegativeClick(this));
         AlertDialog d = builder.create();
         try {
             d.setOnShowListener(dialog -> {
@@ -74,8 +73,8 @@ public class CreateNewPageDialog extends AppCompatDialogFragment {
     }
 
     public interface DialogListener {
-        void onDialogPositiveClick(AppCompatDialogFragment dialog);
+        void onDialogPositiveClick(DialogFragment dialog);
 
-        void onDialogNegativeClick(AppCompatDialogFragment dialog);
+        void onDialogNegativeClick(DialogFragment dialog);
     }
 }

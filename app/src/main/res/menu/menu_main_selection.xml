@@ -5,11 +5,11 @@
 
     <item android:id="@+id/delete_selected"
         android:icon="@drawable/ic_delete"
-        android:title="@string/menu_journal_delete_title"
+        android:title="@string/delete_journal_title"
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction" />
 
     <item android:id="@+id/select_all"
-        android:title="@string/select_all"
+        android:title="@string/select_all_title"
         app:showAsAction="always"/>
 </menu>
