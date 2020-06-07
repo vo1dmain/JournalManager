@@ -55,6 +55,8 @@ public class JournalActivity extends AppCompatActivity {
     LinearLayout tabStrip;
     View chosenTab;
 
+    MenuItem save;
+
     Resources resources;
     Intent data;
 
@@ -131,11 +133,11 @@ public class JournalActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (Objects.requireNonNull(data.getStringExtra(EXTRA_TITLE)).contentEquals(s)) {
-                    menu.findItem(R.id.save_journal).setEnabled(false);
+                    save.setEnabled(false);
                 } else if (!s.toString().trim().isEmpty()) {
-                    menu.findItem(R.id.save_journal).setEnabled(true);
+                    save.setEnabled(true);
                 } else {
-                    menu.findItem(R.id.save_journal).setEnabled(false);
+                    save.setEnabled(false);
                 }
             }
 
@@ -208,6 +210,7 @@ public class JournalActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_journal, menu);
 
         this.menu = toolbar.getMenu();
+        save = this.menu.findItem(R.id.save_journal);
         return true;
     }
 
