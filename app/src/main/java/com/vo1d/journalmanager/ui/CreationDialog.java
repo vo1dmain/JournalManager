@@ -10,6 +10,8 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -19,11 +21,6 @@ import java.util.Objects;
 
 public class CreationDialog extends DialogFragment {
     private DialogListener mListener;
-    private int titleId;
-
-    public CreationDialog(int titleId) {
-        this.titleId = titleId;
-    }
 
     public void setDialogListener(DialogListener listener) {
         mListener = listener;
@@ -33,15 +30,14 @@ public class CreationDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstance) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
-        builder.setTitle(titleId)
-                .setView(View.inflate(requireActivity(), R.layout.dialog_create, null))
+        builder.setView(View.inflate(requireActivity(), R.layout.dialog_create, null))
                 .setPositiveButton(R.string.dialog_ok, (dialog, id) -> mListener.onDialogPositiveClick(this))
                 .setNegativeButton(R.string.dialog_cancel, (dialog, id) -> mListener.onDialogNegativeClick(this));
         AlertDialog d = builder.create();
         try {
             d.setOnShowListener(dialog -> {
                 ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                EditText et = d.findViewById(R.id.title);
+                EditText et = d.findViewById(R.id.new_element_title);
 
                 assert et != null;
                 et.addTextChangedListener(new TextWatcher() {

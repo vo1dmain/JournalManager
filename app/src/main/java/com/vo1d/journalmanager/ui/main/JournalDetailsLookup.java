@@ -23,8 +23,8 @@ public final class JournalDetailsLookup extends ItemDetailsLookup<Long> {
 
         if (view != null) {
             RecyclerView.ViewHolder holder = mRecyclerView.getChildViewHolder(view);
-            if (holder instanceof MainAdapter.JournalViewHolder) {
-                final MainAdapter.JournalViewHolder journalHolder = (MainAdapter.JournalViewHolder) holder;
+            if (holder instanceof MainAdapter.ViewHolder) {
+                final MainAdapter.ViewHolder journalHolder = (MainAdapter.ViewHolder) holder;
 
                 return new ItemDetails<Long>() {
                     @Override

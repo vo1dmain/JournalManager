@@ -20,6 +20,8 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary" />
 
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
+
     <style name="Title" parent="Theme.MaterialComponents">
         <item name="android:colorControlNormal">@color/primaryColor</item>
         <item name="android:colorControlActivated">@color/primaryTextColor</item>

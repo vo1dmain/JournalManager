@@ -16,6 +16,7 @@ public class JournalKeyProvider extends ItemKeyProvider<Long> {
         this.recyclerView = recyclerView;
     }
 
+
     @Nullable
     @Override
     public Long getKey(int position) {
@@ -25,6 +26,6 @@ public class JournalKeyProvider extends ItemKeyProvider<Long> {
     @Override
     public int getPosition(@NonNull Long key) {
         RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForItemId(key);
-        return viewHolder == null ? RecyclerView.NO_POSITION : viewHolder.getLayoutPosition();
+        return viewHolder == null ? RecyclerView.NO_POSITION : viewHolder.getAdapterPosition();
     }
 }

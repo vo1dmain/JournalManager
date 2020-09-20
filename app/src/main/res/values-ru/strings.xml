@@ -3,10 +3,10 @@
     <string name="app_name">Менеджер журналов</string>
     <string name="title_hint">Название</string>
     <string name="is_empty_message">Здесь пока пусто</string>
-    <string name="create_journal_dialog_title">Новый журнал</string>
+    <string name="create_journal_dialog_hint">Новый журнал</string>
     <string name="dialog_cancel">Отмена</string>
     <string name="dialog_ok">ОК</string>
-    <string name="journal_create_success_message">" Добавлен новый журнал: %1$s"</string>
+    <string name="journal_create_success_message">Добавлен новый журнал: %1$s</string>
     <string name="delete_all_title">Удалить все</string>
     <string name="all_journals_deleted_message">Все журналы удалены</string>
     <string name="save_journal_title">Сохранить журнал</string>
@@ -22,7 +22,7 @@
     <string name="selected_count">Выбрано: %1$d</string>
     <string name="add_page_title">Добавить страницу</string>
     <string name="page_one_default_title">Страница 1</string>
-    <string name="create_page_dialog_title">Новая страница</string>
+    <string name="create_page_dialog_hint">Новая страница</string>
     <string name="delete_page_title">Удалить</string>
     <string name="rename_page_title">Переименовать</string>
     <string name="create_journal_fab_label">Создать журнал</string>
@@ -33,4 +33,7 @@
     <string name="delete_journal_confirm_message">Это действие невозможно будет отменить.</string>
     <string name="delete_page_confirm_title">Удалить страницу?</string>
     <string name="delete_page_confirm_message">Это действие невозможно будет отменить.</string>
+    <string name="selected_journals_delete_message">Журналов удалено: %1$d</string>
+    <string name="page_create_success_message">Добавлена новая страница: %1$s</string>
+    <string name="page_delete_success_message">Страница \"%1$s\" удалена</string>
 </resources>

@@ -18,7 +18,7 @@ import com.vo1d.journalmanager.data.Journal;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MainAdapter extends ListAdapter<Journal, MainAdapter.JournalViewHolder> {
+public class MainAdapter extends ListAdapter<Journal, MainAdapter.ViewHolder> {
     private static final DiffUtil.ItemCallback<Journal> DIFF_CALLBACK = new DiffUtil.ItemCallback<Journal>() {
         @Override
         public boolean areItemsTheSame(@NonNull Journal oldItem, @NonNull Journal newItem) {
@@ -42,11 +42,11 @@ public class MainAdapter extends ListAdapter<Journal, MainAdapter.JournalViewHol
     }
 
     @NonNull
-    public JournalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_journal, parent, false);
 
-        return new JournalViewHolder(itemView, itemClickListener, selectionChangedListener);
+        return new ViewHolder(itemView, itemClickListener, selectionChangedListener);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -62,7 +62,7 @@ public class MainAdapter extends ListAdapter<Journal, MainAdapter.JournalViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull JournalViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Journal current = getItem(position);
 
         holder.textViewTitle.setText(current.getTitle());
@@ -97,15 +97,15 @@ public class MainAdapter extends ListAdapter<Journal, MainAdapter.JournalViewHol
         void onSelectionChanged(Journal journal, boolean isChecked);
     }
 
-    class JournalViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView textViewTitle;
         private CheckBox checkBox;
 
-        JournalViewHolder(@NonNull View itemView, final OnItemClickListener cListener, final OnSelectionChangedListener scListener) {
+        ViewHolder(@NonNull View itemView, final OnItemClickListener cListener, final OnSelectionChangedListener scListener) {
             super(itemView);
 
-            textViewTitle = itemView.findViewById(R.id.title);
+            textViewTitle = itemView.findViewById(R.id.element_title);
             checkBox = itemView.findViewById(R.id.checkBox);
 
             itemView.setOnClickListener(v -> {

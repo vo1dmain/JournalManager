@@ -12,7 +12,7 @@
         android:fullBackupContent="true">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.vo1d.journalmanager.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"
             android:launchMode="singleTop">
@@ -24,13 +24,13 @@
         </activity>
 
         <activity
-            android:name=".ui.journal.JournalActivity"
+            android:name="com.vo1d.journalmanager.ui.journal.JournalActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="com.vo1d.journalmanager.MainActivity">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.vo1d.journalmanager.MainActivity" />
         </activity>
     </application>
 

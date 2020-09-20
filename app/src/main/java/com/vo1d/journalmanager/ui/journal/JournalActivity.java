@@ -39,9 +39,9 @@ import java.util.Objects;
 public class JournalActivity extends AppCompatActivity {
 
     public static final String EXTRA_TITLE =
-            "com.vo1d.journalmanager.ui.journal.EXTRA_TITLE";
+            "com.vo1d.journal.manager.ui.journal.EXTRA_TITLE";
     public static final String EXTRA_ID =
-            "com.vo1d.journalmanager.ui.journal.EXTRA_ID";
+            "com.vo1d.journal.manager.ui.journal.EXTRA_ID";
     private static final int DELETE_JOURNAL = 0;
     private static final int DELETE_PAGE = 1;
 
@@ -54,8 +54,6 @@ public class JournalActivity extends AppCompatActivity {
     PagesAdapter adapter;
     LinearLayout tabStrip;
     View chosenTab;
-
-    MenuItem save;
 
     Resources resources;
     Intent data;
@@ -72,7 +70,7 @@ public class JournalActivity extends AppCompatActivity {
 
         resources = getResources();
 
-        journalTitle = findViewById(R.id.title);
+        journalTitle = findViewById(R.id.current_journal_title);
         fab = findViewById(R.id.fab);
         tabLayout = findViewById(R.id.tabs);
         vp = findViewById(R.id.view_pager);
@@ -121,24 +119,16 @@ public class JournalActivity extends AppCompatActivity {
         ).attach();
 
         fab.setOnClickListener(view
-                -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                -> Snackbar.make(view, R.string.is_empty_message, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
 
         journalTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (Objects.requireNonNull(data.getStringExtra(EXTRA_TITLE)).contentEquals(s)) {
-                    save.setEnabled(false);
-                } else if (!s.toString().trim().isEmpty()) {
-                    save.setEnabled(true);
-                } else {
-                    save.setEnabled(false);
-                }
             }
 
             @Override
@@ -164,8 +154,6 @@ public class JournalActivity extends AppCompatActivity {
         data.putExtra(EXTRA_TITLE, currentJournal.getTitle());
 
         setResult(RESULT_OK, data);
-
-        menu.findItem(R.id.save_journal).setEnabled(false);
     }
 
     private void deleteJournal() {
@@ -210,7 +198,6 @@ public class JournalActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_journal, menu);
 
         this.menu = toolbar.getMenu();
-        save = this.menu.findItem(R.id.save_journal);
         return true;
     }
 
@@ -219,11 +206,6 @@ public class JournalActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.add_page:
                 openCreationDialog();
-                return true;
-            case R.id.save_journal:
-                saveJournal();
-                String mes = resources.getString(R.string.journal_update_success_message, currentJournal.getTitle());
-                Snackbar.make(vp, mes, Snackbar.LENGTH_LONG).show();
                 return true;
             case R.id.delete_journal:
                 openConfirmationDialog(DELETE_JOURNAL);
@@ -240,18 +222,20 @@ public class JournalActivity extends AppCompatActivity {
     }
 
     private void openCreationDialog() {
-        CreationDialog creationDialog = new CreationDialog(R.string.create_page_dialog_title);
+        CreationDialog creationDialog = new CreationDialog();
 
         creationDialog.setDialogListener(new CreationDialog.DialogListener() {
             @Override
             public void onDialogPositiveClick(DialogFragment dialog) {
-                EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.title);
+                EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.new_element_title);
 
                 String title = et.getText().toString();
 
                 Page page = new Page(currentJournal.getId(), title);
 
                 pViewModel.insert(page);
+
+                Snackbar.make(vp, resources.getString(R.string.page_create_success_message, title), Snackbar.LENGTH_LONG).show();
             }
 
             @Override
@@ -289,6 +273,8 @@ public class JournalActivity extends AppCompatActivity {
                 public void onDialogPositiveClick(DialogFragment dialog) {
                     unregisterForContextMenu(chosenTab);
                     pViewModel.delete(currentTag);
+
+                    Snackbar.make(vp, resources.getString(R.string.page_delete_success_message, currentTag.getTitle()), Snackbar.LENGTH_LONG).show();
                 }
 
                 @Override

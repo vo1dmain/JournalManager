@@ -10,14 +10,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/save_journal"
-        android:enabled="false"
-        android:icon="@drawable/ic_save"
-        android:title="@string/save_journal_title"
-        android:visible="true"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/delete_journal"
         android:enabled="true"
         android:icon="@drawable/ic_delete"

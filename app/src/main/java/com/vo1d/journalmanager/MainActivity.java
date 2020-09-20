@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.vo1d.journalmanager.data.Journal;
 import com.vo1d.journalmanager.data.JournalsViewModel;
 import com.vo1d.journalmanager.data.Page;
@@ -102,94 +103,98 @@ public class MainActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
 
-        resources = getResources();
-        adapter = new MainAdapter();
-        viewModel = new ViewModelProvider(this).get(JournalsViewModel.class);
+            resources = getResources();
+            adapter = new MainAdapter();
+            viewModel = new ViewModelProvider(this).get(JournalsViewModel.class);
 
-        recyclerView = findViewById(R.id.recycler_view);
-        buttonCreate = findViewById(R.id.button_create_journal);
-        nothingFoundTextView = findViewById(R.id.nothing_found_message);
-        listIsEmptyTextView = findViewById(R.id.list_is_empty);
+            recyclerView = findViewById(R.id.recycler_view);
+            buttonCreate = findViewById(R.id.button_create_journal);
+            nothingFoundTextView = findViewById(R.id.nothing_found_message);
+            listIsEmptyTextView = findViewById(R.id.list_is_empty);
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
+            LinearLayoutManager llm = new LinearLayoutManager(this);
 
-        recyclerView.setLayoutManager(llm);
-        recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(llm);
+            recyclerView.setAdapter(adapter);
 
-        recyclerView.setHasFixedSize(true);
+            recyclerView.setHasFixedSize(true);
 
-        buttonCreate.setOnClickListener(view -> openCreationDialog());
+            buttonCreate.setOnClickListener(view -> openCreationDialog());
 
-        adapter.setOnItemClickListener(journal -> {
-            Intent intent = new Intent(MainActivity.this, JournalActivity.class);
-            intent.putExtra(JournalActivity.EXTRA_TITLE, journal.getTitle());
-            intent.putExtra(JournalActivity.EXTRA_ID, journal.getId());
+            adapter.setOnItemClickListener(journal -> {
+                Intent intent = new Intent(MainActivity.this, JournalActivity.class);
+                intent.putExtra(JournalActivity.EXTRA_TITLE, journal.getTitle());
+                intent.putExtra(JournalActivity.EXTRA_ID, journal.getId());
 
-            tracker.clearSelection();
+                tracker.clearSelection();
 
-            startActivityForResult(intent, OPEN_JOURNAL_REQUEST);
-        });
+                startActivityForResult(intent, OPEN_JOURNAL_REQUEST);
+            });
 
-        adapter.setOnSelectionChangedListener((journal, isChecked) -> {
-            if (isChecked) {
-                viewModel.addToSelection(journal);
-            } else {
-                viewModel.removeFromSelection(journal);
-            }
-        });
-
-        viewModel.getAllJournals().observe(this, adapter::submitList);
-
-        viewModel.getAllJournals().observe(this, journals -> {
-            if (journals.size() == 0) {
-                if (actionMode != null) {
-                    actionMode.finish();
+            adapter.setOnSelectionChangedListener((journal, isChecked) -> {
+                if (isChecked) {
+                    viewModel.addToSelection(journal);
+                } else {
+                    viewModel.removeFromSelection(journal);
                 }
-                recyclerView.setVisibility(View.GONE);
-                listIsEmptyTextView.setVisibility(View.VISIBLE);
-            } else {
-                recyclerView.setVisibility(View.VISIBLE);
-                listIsEmptyTextView.setVisibility(View.GONE);
-            }
-        });
+            });
 
-        tracker = new SelectionTracker.Builder<>(
-                "selectedJournalsTrackerId",
-                recyclerView,
-                new JournalKeyProvider(adapter, recyclerView),
-                new JournalDetailsLookup(recyclerView),
-                StorageStrategy.createLongStorage()
-        )
-                .withSelectionPredicate(SelectionPredicates.createSelectAnything())
-                .build();
+            viewModel.getAllJournals().observe(this, adapter::submitList);
 
-        tracker.addObserver(new SelectionObserver<Long>() {
-            @Override
-            public void onSelectionChanged() {
-                if (tracker.hasSelection()) {
-                    if (actionMode == null) {
-                        actionMode = startSupportActionMode(callback);
-                    } else {
-                        actionMode.setTitle(resources.getString(R.string.selected_count, tracker.getSelection().size()));
-                    }
-                } else if (!tracker.hasSelection()) {
+            viewModel.getAllJournals().observe(this, journals -> {
+                if (journals.size() == 0) {
                     if (actionMode != null) {
                         actionMode.finish();
                     }
+                    recyclerView.setVisibility(View.GONE);
+                    listIsEmptyTextView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    listIsEmptyTextView.setVisibility(View.GONE);
                 }
-            }
-        });
+            });
 
-        adapter.setTracker(tracker);
+            tracker = new SelectionTracker.Builder<>(
+                    "selectedJournalsTrackerId",
+                    recyclerView,
+                    new JournalKeyProvider(adapter, recyclerView),
+                    new JournalDetailsLookup(recyclerView),
+                    StorageStrategy.createLongStorage()
+            )
+                    .withSelectionPredicate(SelectionPredicates.createSelectAnything())
+                    .build();
 
-        viewModel.getSelectedJournals().observe(this, list -> {
-            if (list.isEmpty()) {
-                tracker.clearSelection();
-            }
-        });
+            tracker.addObserver(new SelectionObserver<Long>() {
+                @Override
+                public void onSelectionChanged() {
+                    if (tracker.hasSelection()) {
+                        if (actionMode == null) {
+                            actionMode = startSupportActionMode(callback);
+                        } else {
+                            actionMode.setTitle(resources.getString(R.string.selected_count, tracker.getSelection().size()));
+                        }
+                    } else if (!tracker.hasSelection()) {
+                        if (actionMode != null) {
+                            actionMode.finish();
+                        }
+                    }
+                }
+            });
+
+            adapter.setTracker(tracker);
+
+            viewModel.getSelectedJournals().observe(this, list -> {
+                if (list.isEmpty()) {
+                    tracker.clearSelection();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -323,7 +328,7 @@ public class MainActivity
     }
 
     private void creationDialogPositiveClick(@NonNull DialogFragment dialog) {
-        EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.title);
+        EditText et = Objects.requireNonNull(dialog.getDialog()).findViewById(R.id.new_element_title);
 
         String title = et.getText().toString();
 
@@ -339,7 +344,7 @@ public class MainActivity
     }
 
     private void openCreationDialog() {
-        CreationDialog creationDialog = new CreationDialog(R.string.create_journal_dialog_title);
+        CreationDialog creationDialog = new CreationDialog();
 
         creationDialog.setDialogListener(new CreationDialog.DialogListener() {
 
@@ -376,15 +381,28 @@ public class MainActivity
 
             confirmationDialog.show(getSupportFragmentManager(), "Delete selected confirmation");
         } else if (confirmationType == DELETE_SELECTED) {
-            String message = resources.getString(R.string.delete_selected_confirm_message, tracker.getSelection().size());
+            int count = tracker.getSelection().size();
+
+            String message = resources.getString(R.string.delete_selected_confirm_message, count);
 
             ConfirmationDialog confirmationDialog = new ConfirmationDialog(R.string.delete_journals_confirm_title, message);
+
+            String snackbarMes;
+            if (count == 1) {
+                String title = Objects.requireNonNull(viewModel.getSelectedJournals().getValue()).get(0).getTitle();
+                snackbarMes = resources.getString(R.string.journal_delete_success_message, title);
+            } else if (count == Objects.requireNonNull(viewModel.getAllJournals().getValue()).size()) {
+                snackbarMes = resources.getString(R.string.all_journals_deleted_message);
+            } else {
+                snackbarMes = resources.getString(R.string.selected_journals_delete_message, count);
+            }
 
             confirmationDialog.setDialogListener(new ConfirmationDialog.DialogListener() {
                 @Override
                 public void onDialogPositiveClick(DialogFragment dialog) {
                     viewModel.deleteSelectedJournals();
                     actionMode.finish();
+                    Snackbar.make(recyclerView, snackbarMes, Snackbar.LENGTH_LONG).show();
                 }
 
                 @Override
